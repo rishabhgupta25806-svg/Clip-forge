@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101014">
+<title>ClipForge — Create Shorts & Reels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#"><span class="brand-icon">✦</span> ClipForge</a>
+  <div class="top-note"><span class="status-dot"></span> Browser-based editor <span class="pill">FREE BETA</span></div>
+  <a class="header-link" href="#editor">Open editor <span>↗</span></a>
+</header>
+<main>
+  <section class="hero">
+    <div class="eyebrow"><span>✦</span> YOUR IDEAS, CUT TO THE MOMENT</div>
+    <h1>Make every second<br> <span>scroll-stopping.</span></h1>
+    <p class="hero-copy">Turn your videos into Shorts, Reels, and vertical clips. Trim, frame, add a caption, and export — right in your browser.</p>
+    <a class="primary-button hero-cta" href="#editor">Start creating <span>↓</span></a>
+    <div class="hero-proof"><span>✓ No account needed</span><span>✓ Files stay on your device</span><span>✓ No paid API required</span></div>
+  </section>
+
+  <section class="editor-shell" id="editor">
+    <div class="editor-heading">
+      <div><div class="section-kicker">WORKSPACE / 01</div><h2>Your clip studio</h2></div>
+      <div class="local-badge"><span class="status-dot"></span> Local processing</div>
+    </div>
+
+    <section class="ai-panel" id="aiPanel">
+      <div class="ai-panel-head">
+        <div><div class="section-kicker">AI CLIP FINDER / BETA</div><h3>Find the best moments</h3><p>Provide a transcript, choose your goal, and generate ranked clip suggestions.</p></div>
+        <span class="ai-chip">✦ AI-assisted</span>
+      </div>
+      <div class="ai-controls">
+        <div class="ai-inputs">
+          <label>What kind of moments should we find?
+            <input id="clipPrompt" type="text" placeholder="e.g. surprising advice, funny moments, strong hooks">
+          </label>
+          <label>Video transcript (required for highlight suggestions)
+            <textarea id="transcriptInput" rows="5" placeholder="Paste your transcript here. Separate paragraphs or moments with a blank line. For best results, include timestamps like [00:01:20] when you have them."></textarea>
+          </label>
+          <div class="ai-actions"><button class="primary-button" id="findHighlightsBtn">✦ Find highlights</button><span class="field-hint">No AI API key required. Scoring is a local heuristic, not a real LLM prediction.</span></div>
+        </div>
+        <div class="ai-side-note"><span class="ai-spark">✦</span><strong>What this beta can do</strong><ul><li>Rank transcript segments by hook-like language</li><li>Suggest clip titles and starting captions</li><li>Let you select a suggestion to edit/export</li></ul><p>True speech-to-text, face tracking, and AI semantic analysis need a model/backend and are not included in this free static version.</p></div>
+      </div>
+      <div id="highlightResults" class="highlight-results hidden">
+        <div class="results-head"><strong>Suggested moments</strong><span id="resultCount"></span></div>
+        <div id="highlightCards" class="highlight-cards"></div>
+      </div>
+    </section>
+
+    <div class="editor-grid">
+      <section class="panel source-panel">
+        <div class="panel-title"><span class="step">01</span><div><h3>Bring your video</h3><p>Choose a file from your device</p></div></div>
+        <label class="dropzone" id="dropzone" for="videoFile">
+          <input id="videoFile" type="file" accept="video/*">
+          <span class="upload-icon">↑</span>
+          <strong>Drop your video here</strong>
+          <span>or <u>browse files</u></span>
+          <small>MP4, WebM, MOV (browser support varies)</small>
+        </label>
+        <div id="fileInfo" class="file-info hidden"></div>
+        <div class="field-group">
+          <label for="ratio">Canvas format</label>
+          <div class="ratio-options">
+            <button class="ratio active" data-ratio="9:16"><span class="ratio-icon vertical"></span><b>9:16</b><small>Shorts / Reels</small></button>
+            <button class="ratio" data-ratio="1:1"><span class="ratio-icon square"></span><b>1:1</b><small>Square</small></button>
+            <button class="ratio" data-ratio="16:9"><span class="ratio-icon horizontal"></span><b>16:9</b><small>YouTube</small></button>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="label-row"><label for="startTime">Clip start</label><output id="startLabel">0:00.0</output></div>
+          <input id="startTime" type="range" min="0" max="1" step="0.1" value="0" disabled>
+          <div class="range-ends"><span>Beginning</span><span id="durationLabel">0:00</span></div>
+        </div>
+        <div class="field-group">
+          <div class="label-row"><label for="endTime">Clip end</label><output id="endLabel">0:00.0</output></div>
+          <input id="endTime" type="range" min="0" max="1" step="0.1" value="1" disabled>
+          <div class="range-ends"><span>Start</span><span>End of source</span></div>
+        </div>
+        <div class="field-group">
+          <label for="captionText">On-screen caption</label>
+          <textarea id="captionText" rows="2" maxlength="120" placeholder="Type a short hook or caption..."></textarea>
+          <div class="field-hint">Previewed and burned into your exported clip.</div>
+        </div>
+        <div class="field-group">
+          <label for="captionStyle">Caption style</label>
+          <select id="captionStyle"><option value="bold">Bold white with dark outline</option><option value="box">White text on dark box</option><option value="minimal">Minimal white text</option></select>
+        </div>
+        <button class="primary-button full" id="exportBtn" disabled>Export clip <span>↗</span></button>
+        <p class="export-note">Exports in real time as WebM. Keep this tab open during export.</p>
+      </section>
+
+      <section class="panel preview-panel">
+        <div class="preview-top"><div><div class="section-kicker">LIVE PREVIEW</div><h3>Your composition</h3></div><span id="previewRatio" class="pill">9:16</span></div>
+        <div class="preview-stage">
+          <div class="preview-frame" id="previewFrame">
+            <canvas id="previewCanvas" width="360" height="640"></canvas>
+            <div id="emptyPreview" class="empty-preview"><span>▶</span><strong>Your video preview</strong><small>Upload a video to begin</small></div>
+          </div>
+        </div>
+        <video id="sourceVideo" playsinline muted></video>
+        <div class="preview-controls">
+          <button id="playBtn" class="round-control" disabled aria-label="Play preview">▶</button>
+          <div class="playback-info"><strong id="playTime">0:00.0</strong><span> / <span id="clipDuration">0:00</span></span></div>
+          <div class="control-spacer"></div>
+          <button id="previewBtn" class="secondary-button" disabled>Preview clip</button>
+        </div>
+        <div class="timeline">
+          <div class="timeline-head"><span>CLIP TIMELINE</span><span id="clipLength">0.0 seconds selected</span></div>
+          <div class="timeline-track"><div id="timelineSelection" class="timeline-selection"><span></span><span></span></div></div>
+          <div class="timeline-foot"><span>0:00</span><span id="timelineTotal">0:00</span></div>
+        </div>
+        <div id="exportStatus" class="export-status hidden" role="status"></div>
+        <a id="downloadLink" class="download-button hidden" download="clipforge-export.webm">↓ Download your clip</a>
+      </section>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="section-kicker">MADE FOR CREATORS</div><h2>Simple tools. More ways to create.</h2>
+    <div class="feature-grid">
+      <article class="feature-card"><span class="feature-icon">▣</span><h3>Frame it right</h3><p>Switch between vertical, square, and widescreen layouts for different platforms.</p></article>
+      <article class="feature-card"><span class="feature-icon">⌁</span><h3>Trim the good part</h3><p>Set start and end points and focus on the section worth sharing.</p></article>
+      <article class="feature-card"><span class="feature-icon">Aa</span><h3>Give it a hook</h3><p>Add a readable on-screen caption to give your clip context.</p></article>
+    </div>
+  </section>
+  <section class="honest-note"><span>ⓘ</span><p><strong>Early version:</strong> This free build includes manual trimming, reframing, caption overlays, and browser export. This beta ranks transcript segments with local heuristic scoring; it is not a real AI model. Speech-to-text, semantic AI analysis, face tracking, accounts, and paid plans are not connected yet.</p></section>
+</main>
+<footer><a class="brand" href="#"><span class="brand-icon">✦</span> ClipForge</a><span>Built for creators · Your files stay in your browser</span><a href="#editor">Back to editor ↑</a></footer>
+<script src="app.js"></script>
+</body>
+</html>
